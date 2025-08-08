@@ -1,7 +1,7 @@
 import pandas as pd
 import streamlit as st
-import seaborn as sb
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+import os
 
 # Load dataset
 df = pd.read_csv("Nifty_Stocks.csv")
@@ -21,31 +21,51 @@ stock = st.selectbox("Select Stock", filtered_df['Symbol'].unique())
 # Filter by selected stock
 stock_df = filtered_df[filtered_df['Symbol'] == stock].sort_values(by="Date")
 
-# Calculate Moving Averages
-stock_df['MA20'] = stock_df['Close'].rolling(window=20).mean()
-stock_df['MA50'] = stock_df['Close'].rolling(window=50).mean()
+# Display Stock Image
+image_path = f"images/{stock}.png"  # Image name same as stock symbol
+if os.path.exists(image_path):
+    st.image(image_path, caption=f"{stock} Logo", use_container_width=True)
+else:
+    st.info("No image available for this stock.")
 
-# Performance Summary
-latest_price = stock_df['Close'].iloc[-1]
-highest_price = stock_df['Close'].max()
-lowest_price = stock_df['Close'].min()
-avg_price = stock_df['Close'].mean()
+# Candlestick Chart
+fig = go.Figure(data=[
+    go.Candlestick(
+        x=stock_df['Date'],
+        open=stock_df['Open'],
+        high=stock_df['High'],
+        low=stock_df['Low'],
+        close=stock_df['Close'],
+        name='Candlesticks'
+    )
+])
 
-st.subheader(f"📌 Performance Summary for {stock}")
-st.write(f"**Latest Price:** ₹{latest_price:.2f}")
-st.write(f"**Highest Price:** ₹{highest_price:.2f}")
-st.write(f"**Lowest Price:** ₹{lowest_price:.2f}")
-st.write(f"**Average Price:** ₹{avg_price:.2f}")
+# Add Volume as bar chart
+fig.add_trace(
+    go.Bar(
+        x=stock_df['Date'],
+        y=stock_df['Volume'],
+        name='Volume',
+        marker_color='lightblue',
+        opacity=0.4,
+        yaxis='y2'
+    )
+)
 
-# Plotting
-st.subheader(f"📈 Closing Price Trend with Moving Averages for {stock}")
-fig, ax = plt.subplots(figsize=(10, 5))
-sb.lineplot(data=stock_df, x='Date', y='Close', ax=ax, label='Close Price')
-sb.lineplot(data=stock_df, x='Date', y='MA20', ax=ax, label='20-day MA', color='orange')
-sb.lineplot(data=stock_df, x='Date', y='MA50', ax=ax, label='50-day MA', color='green')
-plt.xticks(rotation=90)
-plt.tight_layout()
-plt.legend()
+# Layout for dual y-axis
+fig.update_layout(
+    title=f"💹 {stock} - Interactive Candlestick with Volume",
+    xaxis_rangeslider_visible=False,
+    yaxis_title='Price (₹)',
+    yaxis2=dict(
+        overlaying='y',
+        side='right',
+        showgrid=False,
+        title='Volume'
+    ),
+    template="plotly_dark",
+    height=700
+)
 
-# Show plot in Streamlit
-st.pyplot(fig)
+# Show chart
+st.plotly_chart(fig, use_container_width=True)

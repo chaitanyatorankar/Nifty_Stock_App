@@ -1,7 +1,6 @@
 import pandas as pd
 import streamlit as st
 import plotly.graph_objects as go
-import os
 
 # Load dataset
 df = pd.read_csv("Nifty_Stocks.csv")
@@ -20,13 +19,6 @@ stock = st.selectbox("Select Stock", filtered_df['Symbol'].unique())
 
 # Filter by selected stock
 stock_df = filtered_df[filtered_df['Symbol'] == stock].sort_values(by="Date")
-
-# Display Stock Image
-image_path = f"images/{stock}.png"  # Image name same as stock symbol
-if os.path.exists(image_path):
-    st.image(image_path, caption=f"{stock} Logo", use_container_width=True)
-else:
-    st.info("No image available for this stock.")
 
 # Candlestick Chart
 fig = go.Figure(data=[

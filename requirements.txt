@@ -1,4 +1,4 @@
 pandas
 streamlit
-plotly.graph_objects
+plotly
 os

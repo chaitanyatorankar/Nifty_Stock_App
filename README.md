@@ -46,3 +46,7 @@ This project is an interactive stock visualization dashboard built using Streaml
 -Dark Theme for Better Readability: Improves visual clarity and makes charts look professional.
 
 -Extensibility: Framework supports adding moving averages, RSI, or other indicators for deeper technical analysis in the future.
+
+# 🚀 Launch the Nifty Stock Dashboard
+
+https://niftystockapp-p9qhqkprwxfbkn5zmvtdf3.streamlit.app/
